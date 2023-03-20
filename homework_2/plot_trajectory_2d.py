@@ -82,7 +82,7 @@ def a_calc(k0, k, phi=np.pi/3):
     return np.dot(s, np.dot(A, s.T))
 
 
-def save_plots(X, X0, b, xrange=None, yrange=None, levels=None, img=None):
+def save_plots(X, X0, b, k, xrange=None, yrange=None, levels=None, img=None):
     oracle = oracles.QuadraticOracle(X, b)
 
     gd_const = methods.GradientDescent(
@@ -98,15 +98,22 @@ def save_plots(X, X0, b, xrange=None, yrange=None, levels=None, img=None):
         oracle, X0, tolerance=1e-10
         )
 
-    _, hist_const = gd_const.run()
-    _, hist_armijo = gd_armijo.run()
-    _, hist_wolfe = gd_wolfe.run()
+    _, hist_const = gd_const.run(max_iter=1000)
+    _, hist_armijo = gd_armijo.run(max_iter=1000)
+    _, hist_wolfe = gd_wolfe.run(max_iter=1000)
 
     plot_levels(oracle.func, xrange, yrange, levels)
     # plt.savefig(f'figures/{img}.png')
     plot_trajectory(oracle.func, hist_const['x'], color='blue')
     plot_trajectory(oracle.func, hist_armijo['x'], color='orange')
     plot_trajectory(oracle.func, hist_wolfe['x'], color='red')
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title(f'k={k}, x0={X0}')
+    plt.legend([f"Constant, {len(hist_const['x']) - 1} iterations",
+                f"Armijo, {len(hist_armijo['x']) - 1} iterations",
+                f"Wolfe, {len(hist_wolfe['x']) - 1} iterations"
+                ])
     plt.savefig(f'figures/{img}.png')
 
 
@@ -127,8 +134,8 @@ if __name__ == '__main__':
     # oracle3 = oracles.QuadraticOracle(X3, b3)
 
     # делаем спуск разными методами
-    save_plots(X1, X01, b1, img='fig1')
-    save_plots(X2, X02, b2, img='fig2')
+    save_plots(X1, X01, b1, 50, img='fig1')
+    save_plots(X2, X02, b2, 5, img='fig2')
 
     X = np.array([[0.5, 0],
                   [0, -0.5]])
@@ -137,7 +144,7 @@ if __name__ == '__main__':
     xrange = np.array([-50, 50])
     yrange= np.array([-5, 5])
     levels = [0, 1, 2, 3, 4]
-    save_plots(X, y, w_init, xrange=xrange, yrange=yrange, levels=levels, img='fig_3')
+    save_plots(X, y, w_init, -1, xrange=xrange, yrange=yrange, levels=levels, img='fig_3')
 
     X = np.array([[0.5, 0],
                   [0, -0.5]])
@@ -146,4 +153,4 @@ if __name__ == '__main__':
     xrange = np.array([-5, 5])
     yrange= np.array([-5, 5])
     levels = [0, 1, 2, 3, 4, 16, 64, 128]
-    save_plots(X, y, w_init, xrange=xrange, yrange=yrange, levels=levels, img='fig_4')
+    save_plots(X, y, w_init, -1, xrange=xrange, yrange=yrange, levels=levels, img='fig_4')

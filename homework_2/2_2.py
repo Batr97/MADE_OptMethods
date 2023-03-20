@@ -41,7 +41,9 @@ def curve_generation(k, n, b_min, b_max, color, method):
     plt.xlabel("Conditional number")
     plt.ylabel("Iterations")
     plt.legend()
-    plt.savefig(f'figures/{method}_iter_vs_k_n.png')                
+    plt.title(f'{method} k vs iterations')
+    plt.savefig(f'figures/{method}_iter_vs_k_n.png') 
+
 
 
 if __name__ == '__main__':
